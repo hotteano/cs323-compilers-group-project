@@ -1,0 +1,15 @@
+### 编译产物 ###
+generated/
+classes/
+*.class
+
+# 生成的 LLVM IR 和测试二进制
+tests/*.ll
+tests/codegen_test
+tests/array_for_test
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
