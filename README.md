@@ -21,15 +21,29 @@ C 源代码 → 词法分析 → 语法分析 → 语义分析 → LLVM IR → �
 ## 目录结构
 
 ```
-├── CLexer.g4 / CParser.g4   ANTLR 文法
+├── CLexer.g4 / CParser.g4   ANTLR 文法（词法 / 语法分离）
 ├── Makefile                 构建入口
 ├── libs/                    ANTLR 4.13.2 运行时
 ├── src/
 │   ├── Main.java            流水线驱动
-│   ├── semantic/            语义分析（符号表、类型规则、错误收集）
-│   └── codegen/             代码生成（IR 输出、类型映射、作用域）
+│   ├── semantic/            语义分析
+│   │   ├── SemanticAnalyzer.java   门面：ANTLR 遍历入口，纯委托
+│   │   ├── SymbolTable.java        作用域栈 + 函数表
+│   │   ├── Types.java              类型规则
+│   │   ├── ErrorReporter.java      错误收集
+│   │   └── pass/                   按语法域拆分：Expression / Declaration / Statement
+│   └── codegen/             代码生成
+│       ├── CodeGenerator.java      门面：ANTLR 遍历入口，纯委托
+│       ├── IREmitter.java          IR 输出、标签与临时变量编号
+│       ├── LLVMTypes.java          C 类型 ↔ LLVM 类型映射
+│       ├── VariableScopes.java     变量 → alloca 地址的作用域栈
+│       ├── FunctionTable.java      函数签名 + 当前返回类型
+│       ├── Value.java              visit 返回值（类型 + IR 引用）
+│       └── pass/                   按语法域拆分：Function / Declaration / Statement / Expression
 └── tests/                   测试输入（.c 文件）
 ```
+
+> 每个文件的详细说明、依赖关系和扩展指南见 [BOOK.md](BOOK.md)。
 
 ## 环境要求
 
